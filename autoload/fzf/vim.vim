@@ -642,7 +642,7 @@ function! fzf#vim#gitfiles(args, ...)
   let preview = printf(
     \ 'bash -c "if [[ {1} =~ M ]]; then %s; else %s {-1}; fi"',
     \ executable('delta')
-      \ ? 'git diff -- {-1} | delta --file-style=omit | sed 1d'
+      \ ? 'git diff -- {-1} | delta --file-style=omit --width=${FZF_PREVIEW_COLUMNS:-$COLUMNS}'
       \ : 'git diff --color=always -- {-1} | sed 1,4d',
     \ s:bin.preview)
   let wrapped = fzf#wrap({
@@ -1240,7 +1240,7 @@ function! s:commits(buffer_local, args)
   endif
 
   if !s:is_win && &columns > s:wide
-    let suffix = executable('delta') ? '| delta' : '--color=always'
+    let suffix = executable('delta') ? '| delta --width=${FZF_PREVIEW_COLUMNS:-$COLUMNS}' : '--color=always'
     call extend(options.options,
     \ ['--preview', 'echo {} | grep -o "[a-f0-9]\{7,\}" | head -1 | xargs git show --format=format: ' . suffix])
   endif
